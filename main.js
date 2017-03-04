@@ -4,33 +4,34 @@ const url = require('url');
 const pool = require('./lib/Pool');
 const UserDAO = require('./dao/User');
 const createConnection = require('./lib/Connection');
+const server_property = require('./properties/server_property.json')
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const hostname = server_property.host || '127.0.0.1';
+const port = server_property.port || 3000;
 
+
+/*Вопросики:
+ 1. Какой config юзать?
+ */
 const server = http.createServer((req, res) => {
+    //Url Parsing
     let parseUrl;
     try {
         parseUrl = url.parse(req.url, true);
     } catch (err) {
         console.error(err);
     }
+
+    //Static Files
     if (parseUrl.pathname.toString().search('/public/*') != -1) {
-        let image;
-        try {
-            image = new fs.createReadStream('.' + parseUrl.pathname);
-        } catch (err) {
-            console.error(err);
-            return err;
-        }
-        sendFile(image, res);
+        sendFile('.' + parseUrl.pathname, res);
         return;
     }
 
+    //Navigation
     switch (parseUrl.pathname) {
         case '/':
-            let file = new fs.createReadStream('./views/index.html');
-            sendFile(file, res);
+            sendFile('./views/index.html', res);
             break;
         case '/user':
             createConnection(pool, function (err, connection) {
@@ -76,7 +77,8 @@ server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
 
-function sendFile(file, res) {
+function sendFile(fileName, res) {
+    let file = new fs.createReadStream(fileName);
     file.pipe(res);
 
     file.on('error', function (err) {
@@ -85,13 +87,12 @@ function sendFile(file, res) {
         console.error(err);
     });
 
-    res.on('close', function () {
+    res.on('load', function () {
         file.destroy();
     })
 }
 
 function Error404(res) {
     res.statusCode = 404;
-    let file = new fs.createReadStream('./views/404.html');
-    sendFile(file, res);
+    sendFile('./views/404.html', res);
 }
