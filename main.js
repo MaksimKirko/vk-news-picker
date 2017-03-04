@@ -15,6 +15,18 @@ const server = http.createServer((req, res) => {
     } catch (err) {
         console.error(err);
     }
+    if (parseUrl.pathname.toString().search('/public/*') != -1) {
+        let image;
+        try {
+            image = new fs.createReadStream('.' + parseUrl.pathname);
+        } catch (err) {
+            console.error(err);
+            return err;
+        }
+        sendFile(image, res);
+        return;
+    }
+
     switch (parseUrl.pathname) {
         case '/':
             let file = new fs.createReadStream('./views/index.html');
@@ -53,10 +65,6 @@ const server = http.createServer((req, res) => {
                     });
                 }
             });
-            break;
-        case '/public/images/404.png':
-            let image = new fs.createReadStream('./public/images/404.png');
-            sendFile(image, res);
             break;
         default:
             Error404(res);
