@@ -3,6 +3,7 @@ const fs = require('fs');
 const url = require('url');
 const pool = require('./lib/Pool');
 const getAllUsers = require('./dao/User');
+const createConnection = require('./lib/Connection');
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -20,10 +21,18 @@ const server = http.createServer((req, res) => {
                 sendFile(file, res);
                 break;
             case '/users':
-                getAllUsers(pool, function (err, users) {
-                    for (let i = 0; i < users.length; i++)
-                        res.write("ID = " + users[i].id + "\nName = "+ users[i].name + "\n\n");
-                    res.end();
+                createConnection(pool, function (err, connection) {
+                    if (err) {
+                        console.error(err);
+                        connection.release();
+                    } else {
+                        getAllUsers(connection, function (err, users) {
+                            for (let i = 0; i < users.length; i++)
+                                res.write("ID = " + users[i].id + "\nName = " + users[i].name + "\n\n");
+                            res.end();
+                            connection.release();
+                        });
+                    }
                 });
                 break;
             default:
