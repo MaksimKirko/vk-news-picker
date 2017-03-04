@@ -1,7 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const url = require('url');
-const pool = require('./Pool');
+const pool = require('./lib/Pool');
 const getAllUsers = require('./dao/User');
 
 const hostname = '127.0.0.1';
@@ -16,7 +16,7 @@ const server = http.createServer((req, res) => {
         }
         switch (parseUrl.pathname) {
             case '/':
-                let file = new fs.createReadStream('./www/index.html');
+                let file = new fs.createReadStream('./views/index.html');
                 sendFile(file, res);
                 break;
             case '/users':
