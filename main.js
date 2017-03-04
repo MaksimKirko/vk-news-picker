@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const url = require('url');
 const pool = require('./lib/Pool');
-const getAllUsers = require('./dao/User');
+const UserDAO = require('./dao/User');
 const createConnection = require('./lib/Connection');
 
 const hostname = '127.0.0.1';
@@ -11,7 +11,7 @@ const port = 3000;
 const server = http.createServer((req, res) => {
         let parseUrl;
         try {
-            parseUrl = url.parse(req.url);
+            parseUrl = url.parse(req.url, true);
         } catch (err) {
             console.error(err);
         }
@@ -20,24 +20,42 @@ const server = http.createServer((req, res) => {
                 let file = new fs.createReadStream('./views/index.html');
                 sendFile(file, res);
                 break;
+            case '/user':
+                createConnection(pool, function (err, connection) {
+                    if (err) {
+                        console.error(err);
+                        connection.release();
+                    } else {
+                        UserDAO.getUserById(connection, parseUrl.query.id, function (err, user) {
+                            if (err || user === null) {
+                                console.error(err !== null ? err : "");
+                                connection.release();
+                                Error404(res);
+                            } else {
+                                connection.release();
+                                res.end("ID = " + user.id + "\nName = " + user.name);
+                            }
+                        });
+                    }
+                });
+                break;
             case '/users':
                 createConnection(pool, function (err, connection) {
                     if (err) {
                         console.error(err);
                         connection.release();
                     } else {
-                        getAllUsers(connection, function (err, users) {
+                        UserDAO.getAllUsers(connection, function (err, users) {
+                            connection.release();
                             for (let i = 0; i < users.length; i++)
                                 res.write("ID = " + users[i].id + "\nName = " + users[i].name + "\n\n");
                             res.end();
-                            connection.release();
                         });
                     }
                 });
                 break;
             default:
-                res.statusCode = 404;
-                res.end();
+                Error404(res);
                 break;
         }
     })
@@ -59,4 +77,9 @@ function sendFile(file, res) {
     res.on('close', function () {
         file.destroy();
     })
+}
+
+function Error404(res) {
+    res.statusCode = 404;
+    res.end();
 }
