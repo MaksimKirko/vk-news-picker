@@ -4,5 +4,8 @@
   "description": "",
   "main": "Hello World.js",
   "author": "MIKL, Kirko, Bulay",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "mysql": "latest"
+  }
 }
