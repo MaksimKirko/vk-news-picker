@@ -1,10 +1,10 @@
 const http = require('http');
-const fs = require('fs');
 const url = require('url');
 const pool = require('./lib/Pool');
 const UserDAO = require('./dao/User');
 const createConnection = require('./lib/Connection');
-const server_property = require('./properties/server_property.json')
+const server_property = require('./properties/server_property.json');
+const sendFile = require('./lib/SendFile');
 
 const hostname = server_property.host || '127.0.0.1';
 const port = server_property.port || 3000;
@@ -23,7 +23,7 @@ const server = http.createServer((req, res) => {
     }
 
     //Static Files
-    if (parseUrl.pathname.toString().search('/public/*') != -1) {
+    if (parseUrl.pathname.toString().startsWith('/public/')) {
         sendFile('.' + parseUrl.pathname, res);
         return;
     }
@@ -76,21 +76,6 @@ const server = http.createServer((req, res) => {
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
-
-function sendFile(fileName, res) {
-    let file = new fs.createReadStream(fileName);
-    file.pipe(res);
-
-    file.on('error', function (err) {
-        res.statusCode = 500;
-        res.end();
-        console.error(err);
-    });
-
-    res.on('load', function () {
-        file.destroy();
-    })
-}
 
 function Error404(res) {
     res.statusCode = 404;
