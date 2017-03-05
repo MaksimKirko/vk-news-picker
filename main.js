@@ -5,6 +5,7 @@ const UserDAO = require('./dao/User');
 const createConnection = require('./lib/Connection');
 const server_property = require('./properties/server_property.json');
 const sendFile = require('./lib/SendFile');
+const Error404 = require('./controllers/Error404');
 
 const hostname = server_property.host || '127.0.0.1';
 const port = server_property.port || 3000;
@@ -31,6 +32,8 @@ const server = http.createServer((req, res) => {
     //Navigation
     switch (parseUrl.pathname) {
         case '/':
+        case '/index':
+        case '/index.html':
             sendFile('./views/index.html', res);
             break;
         case '/user':
@@ -76,8 +79,3 @@ const server = http.createServer((req, res) => {
 server.listen(port, hostname, () => {
     console.log(`Server running at http://${hostname}:${port}/`);
 });
-
-function Error404(res) {
-    res.statusCode = 404;
-    sendFile('./views/404.html', res);
-}
