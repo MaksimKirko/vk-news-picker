@@ -1,11 +1,11 @@
 const http = require('http');
 const url = require('url');
-const pool = require('./lib/Pool');
-const UserDAO = require('./dao/User');
-const createConnection = require('./lib/Connection');
+const pool = require('./lib/pool');
+const UserDAO = require('./dao/userdao');
+const createConnection = require('./lib/connection');
 const server_property = require('./properties/server_property.json');
-const sendFile = require('./lib/SendFile');
-const Error404 = require('./controllers/Error404');
+const sendFile = require('./lib/sendfile');
+const Error404 = require('./controllers/404');
 
 const hostname = server_property.host || '127.0.0.1';
 const port = server_property.port || 3000;
@@ -37,12 +37,12 @@ const server = http.createServer((req, res) => {
             sendFile('./views/index.html', res);
             break;
         case '/user':
-            createConnection(pool, function (err, connection) {
+            createConnection(pool, function(err, connection) {
                 if (err) {
                     console.error(err);
                     connection.release();
                 } else {
-                    UserDAO.getUserById(connection, parseUrl.query.id, function (err, user) {
+                    UserDAO.getUserById(connection, parseUrl.query.id, function(err, user) {
                         if (err || user === null) {
                             console.error(err !== null ? err : "");
                             connection.release();
@@ -56,12 +56,12 @@ const server = http.createServer((req, res) => {
             });
             break;
         case '/users':
-            createConnection(pool, function (err, connection) {
+            createConnection(pool, function(err, connection) {
                 if (err) {
                     console.error(err);
                     connection.release();
                 } else {
-                    UserDAO.getAllUsers(connection, function (err, users) {
+                    UserDAO.getAllUsers(connection, function(err, users) {
                         connection.release();
                         for (let i = 0; i < users.length; i++)
                             res.write("ID = " + users[i].id + "\nName = " + users[i].name + "\n\n");
