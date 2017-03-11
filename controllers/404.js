@@ -1,4 +1,4 @@
-const sendFile = require('../lib/SendFile');
+const sendFile = require('../lib/sendfile');
 
 module.exports = function Error404(req, res) {
     res.statusCode = 404;

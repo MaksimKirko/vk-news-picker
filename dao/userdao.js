@@ -1,4 +1,4 @@
-let User = require('../models/User');
+let User = require('../models/user');
 const mysql = require('mysql');
 
 class UserDAO {
