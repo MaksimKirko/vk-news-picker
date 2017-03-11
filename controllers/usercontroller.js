@@ -1,7 +1,7 @@
 const url = require('url');
-const UserDAO = require('../dao/User');
-const createConnection = require('../lib/Connection');
-const Error404 = require('../controllers/Error404');
+const UserDAO = require('../dao/userdao');
+const createConnection = require('../lib/connection');
+const Error404 = require('../controllers/404');
 
 module.exports = function getUserById(req, res, pool) {
     createConnection(pool, function (err, connection) {

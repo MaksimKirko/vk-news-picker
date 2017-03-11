@@ -1,5 +1,5 @@
 const url = require('url');
-const routingTable = require('./routingTable');
+const routingTable = require('./routingtable');
 
 module.exports = function Routing(req, res, pool) {
 

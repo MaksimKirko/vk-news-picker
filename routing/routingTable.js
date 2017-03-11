@@ -1,6 +1,6 @@
-const SendFile = require('../lib/SendFile');
-const User = require('../controllers/User');
-const Error404 = require('../controllers/Error404');
+const SendFile = require('../lib/sendfile');
+const User = require('../controllers/usercontroller');
+const Error404 = require('../controllers/404');
 
 const routingTable = [
     new Map(new RegExp("^/$"), (req, res) => SendFile(req, res, "./views/index.html")),
