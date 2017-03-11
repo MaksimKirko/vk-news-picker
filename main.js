@@ -1,17 +1,16 @@
 const http = require('http');
-const server_property = require('./properties/server_property.json');
-const Error404 = require('./controllers/Error404');
-const Routing = require('./routing/router');
 const pool = require('./lib/Pool');
+const Routing = require('./routing/router');
+const server_property = require('./properties/server_property.json');
+const routingTable = require('./routing/routingTable');
+
 const hostname = server_property.host || '127.0.0.1';
 const port = server_property.port || 3000;
 
-/*Вопросики:
- 1. Какой config юзать?
- */
+
 const server = http.createServer((req, res) => {
 
-    Routing(req, res, pool);
+    Routing(req, res, pool,routingTable.routingTable);
 
 });
 

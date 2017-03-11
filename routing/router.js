@@ -1,11 +1,11 @@
 const url = require('url');
-const routingTable = require('./routingTable');
 
-module.exports = function Routing(req, res, pool) {
+
+module.exports = function Routing(req, res, pool, routingTable) {
 
     let pUrl = parseUrl(req);
 
-    let routPath = routingTable.routingTable.find(({urlRegExp}) =>
+    let routPath = routingTable.find(({urlRegExp}) =>
         urlRegExp.test(pUrl.pathname));
 
     let [{}, ...args] = routPath.urlRegExp.exec(pUrl.pathname);
