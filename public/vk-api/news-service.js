@@ -1,7 +1,7 @@
 function getNews(tags, count, callback) {
     VK.Api.call('newsfeed.search', {
         q: tags,
-        count: 3
+        count: count
     }, function(data) {
         callback(data);
     });
