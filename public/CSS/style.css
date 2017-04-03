@@ -5,10 +5,22 @@
   z-index: 1;
 }
 
+#head_menu {
+  width: 100%;
+  background-color: #45688E;
+  margin-top: 1%;
+  text: #FFFFFF;
+  text-align: center;
+  padding: 1%;
+  font-family: serif;
+  font-style: italic;
+}
+
 #news_container {
   float: left;
   margin: 1% 1% 1% 1%;
   position: relative;
   text-align: left;
   display: block;
+  background-color: #FFFFE0;
 }
